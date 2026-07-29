@@ -1,0 +1,8 @@
+{
+  "name": "vigitec-panama",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo \"Listo para desarrollar\""
+  }
+}
