@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
+require_once 'config.php'; // Cargar llave secreta de forma segura
 
 // Recibir los datos del formulario
 $nombre = isset($_POST['Nombre']) ? trim($_POST['Nombre']) : '';
@@ -16,7 +17,7 @@ if (empty($recaptcha_response)) {
 }
 
 // 2. Validar con los servidores de Google
-$secret_key = '6LdT5GstAAAAAPAlYSeubV5EFhLUCF4MOi_8t83w';
+$secret_key = RECAPTCHA_SECRET_KEY;
 $url = 'https://www.google.com/recaptcha/api/siteverify';
 $data = array('secret' => $secret_key, 'response' => $recaptcha_response);
 
