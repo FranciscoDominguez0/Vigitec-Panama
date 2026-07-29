@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -37,7 +38,7 @@
 </head>
 <body class="bg-light text-gray-800 font-sans antialiased selection:bg-accent selection:text-white">
 
-  <!-- ==================== HEADER / NAVBAR ==================== -->
+    <!-- ==================== HEADER / NAVBAR ==================== -->
   <header class="bg-primary/95 backdrop-blur-md py-4 sticky top-0 z-50 shadow-2xl border-b border-gray-800">
     <div class="container mx-auto px-4 max-w-7xl flex items-center justify-between">
       
@@ -48,10 +49,10 @@
       
       <!-- Desktop Menu -->
       <nav class="hidden md:flex items-center space-x-8 text-[15px] font-medium text-gray-300">
-        <a href="../index.html" class="hover:text-white transition-colors">Inicio</a>
-        <a href="../quienes-somos/index.html" class="hover:text-white transition-colors">¿Quiénes somos?</a>
-        <a href="../servicios/index.html" class="hover:text-white transition-colors">Servicios</a>
-        <a href="../contacto/index.html" class="hover:text-white transition-colors">Contacto</a>
+        <a href="../index.html" class="hover:text-white transition-colors ">Inicio</a>
+        <a href="../quienes-somos/index.html" class="hover:text-white transition-colors ">¿Quiénes somos?</a>
+        <a href="../servicios/index.html" class="hover:text-white transition-colors ">Servicios</a>
+        <a href="../contacto/index.html" class="hover:text-white transition-colors ">Contacto</a>
         <a href="https://eshop.premium-soft.com/vigitecpanama" target="_blank" class="text-green-400 hover:text-green-300 font-semibold transition-colors flex items-center gap-1">Compra-Online <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>
       </nav>
 
@@ -61,8 +62,44 @@
           Cotizar Ahora
         </a>
       </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path id="mobile-menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="hidden md:hidden bg-[#111111] absolute top-full left-0 w-full border-b border-gray-800 shadow-2xl">
+      <div class="flex flex-col px-6 py-6 space-y-4">
+        <a href="../index.html" class="text-gray-300 hover:text-accent font-medium text-lg">Inicio</a>
+        <a href="../quienes-somos/index.html" class="text-gray-300 hover:text-accent font-medium text-lg">¿Quiénes somos?</a>
+        <a href="../servicios/index.html" class="text-gray-300 hover:text-accent font-medium text-lg">Servicios</a>
+        <a href="../contacto/index.html" class="text-gray-300 hover:text-accent font-medium text-lg">Contacto</a>
+        <a href="https://eshop.premium-soft.com/vigitecpanama" target="_blank" class="text-green-400 hover:text-green-300 font-medium text-lg flex items-center gap-1">Compra-Online <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>
+        <div class="pt-4 mt-2 border-t border-gray-800">
+          <a href="../cotizacion/index.html" class="block text-center bg-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-accentHover transition-colors w-full">Cotizar Ahora</a>
+        </div>
+      </div>
     </div>
   </header>
+
+  <script>
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.getElementById('mobile-menu-icon');
+    
+    if(btn && menu && icon) {
+      btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+        if (menu.classList.contains('hidden')) {
+          icon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+        } else {
+          icon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+        }
+      });
+    }
+  </script>
 
 
     <!-- ==================== PAGE HEADER ==================== -->
@@ -78,10 +115,18 @@
         </p>
       </div>
 
-      <div class="bg-[#1A1A1A] p-8 lg:p-12 shadow-2xl rounded-[2rem] border border-gray-800">
-        <form id="cotizacion-form" class="space-y-8" action="https://formsubmit.co/info@vigitecpanama.com" method="POST">
-          <input type="hidden" name="_subject" value="Nueva Solicitud de Cotización Web!">
-          <input type="hidden" name="_template" value="table">
+      <div id="form-container" class="bg-[#1A1A1A] p-8 lg:p-12 shadow-2xl rounded-[2rem] border border-gray-800 relative">
+        
+        <!-- Success Message (Hidden) -->
+        <div id="success-message" class="hidden absolute inset-0 bg-[#1A1A1A] rounded-[2rem] flex flex-col items-center justify-center p-8 text-center z-20">
+          <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mb-6 animate-bounce">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <h3 class="text-3xl font-bold text-white mb-4">¡Cotización Enviada!</h3>
+          <p class="text-gray-400 text-lg">Hemos recibido tu solicitud exitosamente. Un especialista de VIGITEC se pondrá en contacto contigo a la brevedad.</p>
+        </div>
+
+        <form id="cotizacion-form" class="space-y-8 transition-opacity duration-300" action="../enviar.php" method="POST">
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="space-y-3">
@@ -119,14 +164,81 @@
             <textarea rows="5" name="Detalles" class="w-full p-4 bg-[#111111] border border-gray-700 text-white rounded-xl focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all shadow-inner resize-none" placeholder="Cuéntenos más acerca de lo que necesita..." required></textarea>
           </div>
           
+          <!-- reCAPTCHA Oficial de Google -->
+          <div class="flex items-center justify-center pt-2">
+            <div class="g-recaptcha" data-sitekey="6LeX3GstAAAAAK2cUkoO3gRuQDpIdvrYgj1iVTHs" data-theme="dark"></div>
+          </div>
+
           <div class="pt-4">
-            <button type="submit" class="w-full md:w-auto px-12 py-5 bg-accent text-white font-bold tracking-wide uppercase rounded-xl hover:bg-accentHover transition-colors shadow-[0_0_20px_rgba(230,57,70,0.4)] hover:shadow-[0_0_30px_rgba(230,57,70,0.6)] flex items-center justify-center group">
-              Enviar Solicitud de Cotización
-              <svg class="w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <button id="submit-btn" type="submit" class="w-full md:w-auto px-12 py-5 bg-accent text-white font-bold tracking-wide uppercase rounded-xl hover:bg-accentHover transition-colors shadow-[0_0_20px_rgba(230,57,70,0.4)] hover:shadow-[0_0_30px_rgba(230,57,70,0.6)] flex items-center justify-center group relative overflow-hidden">
+              <span id="btn-text">Enviar Solicitud de Cotización</span>
+              <svg id="btn-icon" class="w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              <!-- Spinner (Hidden by default) -->
+              <svg id="btn-spinner" class="hidden animate-spin ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </button>
           </div>
           
         </form>
+        
+        <!-- AJAX Submission Script -->
+        <script>
+          document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Detiene el redireccionamiento
+            
+            const form = this;
+            const btn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const successMessage = document.getElementById('success-message');
+            
+            // Estado de carga (Loading)
+            btn.disabled = true;
+            btnText.innerText = 'Enviando Seguro...';
+            btnIcon.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+            
+            // Enviar datos en segundo plano a enviar.php
+            fetch(form.action, {
+              method: 'POST',
+              body: new FormData(form),
+              headers: {
+                'Accept': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Animación de éxito
+                form.style.opacity = '0';
+                setTimeout(() => {
+                  form.classList.add('hidden');
+                  successMessage.classList.remove('hidden');
+                }, 300);
+              } else {
+                // Error de validación o reCAPTCHA
+                alert(data.message || 'Error de seguridad. Por favor intente nuevamente.');
+                grecaptcha.reset(); // Reiniciar el Captcha
+                
+                // Restaurar botón
+                btn.disabled = false;
+                btnText.innerText = 'Enviar Solicitud de Cotización';
+                btnSpinner.classList.add('hidden');
+                btnIcon.classList.remove('hidden');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              btnText.innerText = 'Error al enviar';
+              btnSpinner.classList.add('hidden');
+              setTimeout(() => {
+                btn.disabled = false;
+                btnText.innerText = 'Enviar Solicitud de Cotización';
+                btnIcon.classList.remove('hidden');
+              }, 3000);
+            });
+          });
+        </script>
       </div>
     </div>
   </section>
