@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "start": "echo \"Listo para desarrollar\""
+  },
+  "dependencies": {
+    "sharp": "^0.35.3"
   }
 }
