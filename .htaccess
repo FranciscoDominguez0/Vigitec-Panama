@@ -1,0 +1,19 @@
+RewriteEngine On
+
+# Si se accede directamente a /index.html en la raíz, redirigir a /
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html\ HTTP/ [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+
+# Si se accede a /carpeta/index.html, redirigir a /carpeta/
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(.*)index\.html\ HTTP/ [NC]
+RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+
+# Ocultar extensión .html en otras páginas si existen
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.html\ HTTP/ [NC]
+RewriteRule ^([^.]+)\.html$ /$1 [R=301,L]
+
+# Si la URL no tiene extensión, servir el archivo .html internamente si existe
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
