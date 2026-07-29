@@ -39,7 +39,7 @@ if (!$response_data->success) {
 }
 
 // 3. Enviar el correo
-$to = 'fdominguez@vigitecpanama.com';
+$to = 'dominguezf225@gmail.com';
 $subject = 'NUEVA COTIZACION WEB (Validada por reCAPTCHA)';
 
 $message = "Se ha recibido una nueva solicitud de cotización desde la página web:\n\n";
