@@ -16,7 +16,7 @@ if (empty($recaptcha_response)) {
 }
 
 // 2. Validar con los servidores de Google
-$secret_key = '6LeX3GstAAAAAJbWX8K9RvSd8CJj7lUB7qKiQUgP';
+$secret_key = '6LdT5GstAAAAAPAlYSeubV5EFhLUCF4MOi_8t83w';
 $url = 'https://www.google.com/recaptcha/api/siteverify';
 $data = array('secret' => $secret_key, 'response' => $recaptcha_response);
 
