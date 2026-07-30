@@ -199,6 +199,13 @@
               document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                // Verificar si el captcha fue completado antes de enviar
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (recaptchaResponse.length === 0) {
+                  alert('Por favor, marque la casilla de "No soy un robot" antes de enviar la cotización.');
+                  return;
+                }
+                
                 const form = this;
                 const btn = document.getElementById('submit-btn');
                 const btnText = document.getElementById('btn-text');
@@ -240,6 +247,7 @@
                 })
                 .catch(error => {
                   console.error('Error:', error);
+                  alert('Ha ocurrido un problema al enviar la cotización. Verifique su conexión o intente más tarde.');
                   btnText.innerText = 'Error al enviar';
                   btnSpinner.classList.add('hidden');
                   setTimeout(() => {
