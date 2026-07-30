@@ -105,17 +105,21 @@
 
 
 
-  <section class="py-10 bg-[#111111]">
-    <div class="container mx-auto px-4 max-w-5xl">
+  <section class="py-12 relative overflow-hidden bg-[url('../assets/img/hero/servicios_bg.png')] bg-cover bg-center bg-no-repeat bg-fixed">
+    <!-- Destello rojo decorativo sutil -->
+    <div class="absolute top-1/2 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[100px] pointer-events-none hidden lg:block"></div>
+
+    <div class="container mx-auto px-4 max-w-5xl relative z-10">
       
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-display font-bold text-white mb-2">Información de Contacto</h2>
-        <p class="text-gray-400 text-sm max-w-xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-widest font-display mb-4 leading-tight">CONTÁCTANOS</h2>
+        <div class="w-16 h-1 bg-accent mx-auto mb-6 rounded-full"></div>
+        <p class="text-gray-300 text-lg max-w-2xl mx-auto font-medium">
           Nuestro equipo de expertos está dispuesto a brindarle la mejor asesoría técnica y comercial.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-[#1A1A1A] p-8 md:p-10 rounded-2xl border border-gray-800 shadow-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-[#1A1A1A]/95 backdrop-blur-md p-8 md:p-10 rounded-2xl border border-gray-700/50 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
         
         <!-- Contact Details -->
         <div class="space-y-8 flex flex-col justify-center">
