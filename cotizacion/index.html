@@ -136,6 +136,12 @@
         <div class="lg:w-1/2 w-full">
           <div id="form-container" class="bg-[#1A1A1A]/95 backdrop-blur-md p-6 lg:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-lg border border-gray-700/50 relative">
             
+            <!-- Custom Error Toast -->
+            <div id="custom-error-toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-accent text-white px-5 py-3 rounded-md shadow-red-glow font-medium text-sm flex items-center z-50 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-10px] w-11/12 md:w-auto md:max-w-md text-center">
+              <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              <span id="custom-error-message"></span>
+            </div>
+
             <!-- Success Message (Hidden) -->
             <div id="success-message" class="hidden flex-col items-center justify-center p-8 text-center">
               <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mb-6 animate-bounce">
@@ -196,13 +202,27 @@
             
             <!-- AJAX Submission Script -->
             <script>
+              function showErrorToast(message) {
+                const toast = document.getElementById('custom-error-toast');
+                const toastMsg = document.getElementById('custom-error-message');
+                toastMsg.innerText = message;
+                
+                toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                
+                setTimeout(() => {
+                  toast.classList.remove('opacity-100', 'translate-y-0');
+                  toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                }, 4000);
+              }
+
               document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Verificar si el captcha fue completado antes de enviar
                 const recaptchaResponse = grecaptcha.getResponse();
                 if (recaptchaResponse.length === 0) {
-                  alert('Por favor, marque la casilla de "No soy un robot" antes de enviar la cotización.');
+                  showErrorToast('Por favor, marque la casilla de "No soy un robot" antes de enviar la cotización.');
                   return;
                 }
                 
@@ -236,7 +256,7 @@
                       successMessage.classList.remove('hidden');
                     }, 300);
                   } else {
-                    alert(data.message || 'Error de seguridad. Por favor intente nuevamente.');
+                    showErrorToast(data.message || 'Error de seguridad. Por favor intente nuevamente.');
                     grecaptcha.reset();
                     
                     btn.disabled = false;
@@ -247,7 +267,7 @@
                 })
                 .catch(error => {
                   console.error('Error:', error);
-                  alert('Ha ocurrido un problema al enviar la cotización. Verifique su conexión o intente más tarde.');
+                  showErrorToast('Ha ocurrido un problema al enviar la cotización. Verifique su conexión o intente más tarde.');
                   btnText.innerText = 'Error al enviar';
                   btnSpinner.classList.add('hidden');
                   setTimeout(() => {
