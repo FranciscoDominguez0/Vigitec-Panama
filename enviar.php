@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Iniciar buffer para evitar que warnings rompan el JSON
 header('Content-Type: application/json');
 require_once 'config.php'; // Cargar llave secreta de forma segura
 
@@ -84,7 +85,14 @@ try {
 
     // Remitente y Destinatario
     $mail->setFrom(getenv('SMTP_USER'), 'Cotizaciones Web Vigitec');
-    $mail->addAddress('info@vigitecpanama.com', 'Info Vigitec'); // Correo destino
+    
+    // Correo de destino dinámico (si está vacío, usa el mismo SMTP_USER)
+    $destEmail = getenv('SMTP_DESTINATION');
+    if (empty($destEmail)) {
+        $destEmail = getenv('SMTP_USER');
+    }
+    $mail->addAddress($destEmail, 'Destinatario Vigitec'); 
+    
     $mail->addReplyTo($email, $nombre); // Responder al cliente
 
     // Contenido del correo
@@ -94,8 +102,12 @@ try {
     $mail->Body    = $message;
 
     $mail->send();
+    
+    // Limpiar cualquier warning/notice previo para no corromper el JSON
+    if (ob_get_length()) ob_clean();
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
+    if (ob_get_length()) ob_clean();
     echo json_encode(['success' => false, 'message' => 'Error al enviar por SMTP. Inténtelo más tarde.']);
 }
 ?>
