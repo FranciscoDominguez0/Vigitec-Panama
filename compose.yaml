@@ -5,6 +5,8 @@ services:
       - "8087:80"
     volumes:
       - .:/var/www/html
+    env_file:
+      - .env
     depends_on:
       - mailhog
 

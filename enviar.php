@@ -50,14 +50,52 @@ $message .= "Servicio de Interés: " . $servicio . "\n";
 $message .= "Detalles Adicionales:\n" . $detalles . "\n\n";
 $message .= "--\nEnviado desde el formulario seguro de vigitecpanama.com";
 
-// En PHP estándar se usa el dominio propio para evitar que caiga en Spam
-$headers = "From: noreply@vigitecpanama.com\r\n";
-$headers .= "Reply-To: " . $email . "\r\n";
-$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-if (mail($to, $subject, $message, $headers)) {
+$mail = new PHPMailer(true);
+
+try {
+    // Configuración del servidor SMTP
+    $mail->isSMTP();
+    $mail->Host       = getenv('SMTP_HOST');
+    $mail->SMTPAuth   = true;
+    $mail->Username   = getenv('SMTP_USER');
+    $mail->Password   = getenv('SMTP_PASS');
+    
+    // Determinar la seguridad por el puerto
+    $puerto = getenv('SMTP_PORT');
+    $mail->Port = $puerto;
+    if ($puerto == 465) {
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    } else {
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    }
+
+    // Desactivar validación estricta de SSL local (útil en algunos hostings)
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    // Remitente y Destinatario
+    $mail->setFrom(getenv('SMTP_USER'), 'Cotizaciones Web Vigitec');
+    $mail->addAddress('info@vigitecpanama.com', 'Info Vigitec'); // Correo destino
+    $mail->addReplyTo($email, $nombre); // Responder al cliente
+
+    // Contenido del correo
+    $mail->CharSet = 'UTF-8';
+    $mail->isHTML(false);
+    $mail->Subject = $subject;
+    $mail->Body    = $message;
+
+    $mail->send();
     echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Error interno al enviar el correo. Por favor contáctenos por teléfono.']);
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Error al enviar por SMTP. Inténtelo más tarde.']);
 }
 ?>
