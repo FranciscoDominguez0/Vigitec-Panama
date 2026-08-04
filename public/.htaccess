@@ -1,0 +1,48 @@
+# ==============================================================================
+# SEGURIDAD: Bloquear acceso web a archivos sensibles (.env, .git, etc.)
+# ==============================================================================
+
+# 1. Denegar acceso a cualquier archivo o carpeta que comience con un punto (.env, .git, etc.)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+    Require all denied
+</FilesMatch>
+
+# 2. Denegar acceso a archivos de configuración, paquetes y entornos
+<FilesMatch "(^\.env|\.log|\.ini|\.json|\.lock|Dockerfile|compose\.yaml)$">
+    Order allow,deny
+    Deny from all
+    Require all denied
+</FilesMatch>
+
+# ==============================================================================
+# REGLAS DE REESCRITURA (MOD_REWRITE)
+# ==============================================================================
+RewriteEngine On
+
+# Forzar error 403 Forbidden explícito si se intenta acceder a .env o .git por URL
+RewriteRule ^\.env - [F,L,NC]
+RewriteRule ^\.git - [F,L,NC]
+RewriteRule ^composer\.(json|lock)$ - [F,L,NC]
+RewriteRule ^package(-lock)?\.json$ - [F,L,NC]
+RewriteRule ^Dockerfile$ - [F,L,NC]
+RewriteRule ^compose\.yaml$ - [F,L,NC]
+
+# Si se accede directamente a /index.html en la raíz, redirigir a /
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html\ HTTP/ [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+
+# Si se accede a /carpeta/index.html, redirigir a /carpeta/
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(.*)index\.html\ HTTP/ [NC]
+RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+
+# Ocultar extensión .html en otras páginas si existen
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.html\ HTTP/ [NC]
+RewriteRule ^([^.]+)\.html$ /$1 [R=301,L]
+
+# Si la URL no tiene extensión, servir el archivo .html internamente si existe
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]

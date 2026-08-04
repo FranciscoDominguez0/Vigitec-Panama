@@ -1,7 +1,7 @@
 <?php
 ob_start(); // Iniciar buffer para evitar que warnings rompan el JSON
 header('Content-Type: application/json');
-require_once 'config.php'; // Cargar llave secreta de forma segura
+require_once __DIR__ . '/../config.php'; // Cargar llave secreta de forma segura
 
 // Recibir los datos del formulario
 $nombre = isset($_POST['Nombre']) ? trim($_POST['Nombre']) : '';
@@ -51,7 +51,7 @@ $message .= "Servicio de Interés: " . $servicio . "\n";
 $message .= "Detalles Adicionales:\n" . $detalles . "\n\n";
 $message .= "--\nEnviado desde el formulario seguro de vigitecpanama.com";
 
-require 'vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
