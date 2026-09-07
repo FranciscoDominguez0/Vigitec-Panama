@@ -31,6 +31,7 @@ curl_setopt($ch_recaptcha, CURLOPT_POST, true);
 curl_setopt($ch_recaptcha, CURLOPT_POSTFIELDS, http_build_query($data));
 curl_setopt($ch_recaptcha, CURLOPT_RETURNTRANSFER, true);
 $verify_response = curl_exec($ch_recaptcha);
+$curl_error_msg = curl_error($ch_recaptcha);
 
 $response_data = json_decode($verify_response);
 
@@ -38,7 +39,7 @@ $response_data = json_decode($verify_response);
 if (!$response_data || !isset($response_data->success) || !$response_data->success) {
     // Modo depuración activo:
     if (ob_get_length()) ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data, 'raw_response' => $verify_response]); 
+    echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data, 'raw_response' => $verify_response, 'curl_error' => $curl_error_msg]); 
     exit;
 }
 
