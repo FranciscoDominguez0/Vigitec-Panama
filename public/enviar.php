@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 ob_start(); // Prevenir que advertencias de PHP rompan la respuesta JSON
 header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php'; // Importar credenciales de forma segura
@@ -33,10 +36,9 @@ $response_data = json_decode($verify_response);
 
 // Add better error handling to see what is failing if needed
 if (!$response_data || !isset($response_data->success) || !$response_data->success) {
-    // Para depurar si falla, podrías descomentar la siguiente línea temporalmente en producción:
-    // echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data]); exit;
-    
-    echo json_encode(['success' => false, 'message' => 'Verificación de seguridad fallida. Inténtelo de nuevo.']);
+    // Modo depuración activo:
+    if (ob_get_length()) ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data, 'raw_response' => $verify_response]); 
     exit;
 }
 
@@ -93,6 +95,13 @@ if (ob_get_length()) ob_clean();
 if ($httpcode >= 200 && $httpcode < 300) {
     echo json_encode(['success' => true]); // Envío exitoso
 } else {
-    echo json_encode(['success' => false, 'message' => 'Error al enviar a través de Resend. Inténtelo más tarde.']);
+    $error_msg = error_get_last();
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error al enviar a través de Resend.', 
+        'http_code' => $httpcode, 
+        'resend_response' => $response,
+        'php_error' => $error_msg
+    ]);
 }
 
