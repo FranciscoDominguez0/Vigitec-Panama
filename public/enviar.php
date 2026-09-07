@@ -47,7 +47,15 @@ if (!$response_data || !isset($response_data->success) || !$response_data->succe
     
     // Modo depuración activo:
     if (ob_get_length()) ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data, 'raw_response' => $verify_response, 'curl_error' => $curl_error_msg]); 
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error de recaptcha', 
+        'debug' => $response_data, 
+        'raw_response' => $verify_response, 
+        'curl_error' => $curl_error_msg,
+        'secret_key_length' => strlen($secret_key),
+        'secret_key_start' => substr($secret_key, 0, 5)
+    ]); 
     exit;
 }
 
