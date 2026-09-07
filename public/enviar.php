@@ -1,106 +1,149 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+declare(strict_types=1);
 
-ob_start(); // Prevenir que advertencias de PHP rompan la respuesta JSON
-header('Content-Type: application/json');
 require_once __DIR__ . '/../config.php'; // Importar credenciales de forma segura
 
-// 1. Recibir y limpiar los datos del formulario (Evitar inyección de código)
-$nombre = isset($_POST['Nombre']) ? trim($_POST['Nombre']) : '';
-$telefono = isset($_POST['Teléfono']) ? trim($_POST['Teléfono']) : '';
-$email = isset($_POST['Email']) ? trim($_POST['Email']) : '';
-$servicio = isset($_POST['Servicio']) ? trim($_POST['Servicio']) : '';
-$detalles = isset($_POST['Detalles']) ? trim($_POST['Detalles']) : '';
-$recaptcha_response = isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '';
+/**
+ * --- FUNCIONES AUXILIARES ---
+ */
 
-// 2. Validar que el usuario haya marcado la casilla de reCAPTCHA (Protección Anti-Spam)
-if (empty($recaptcha_response)) {
-    echo json_encode(['success' => false, 'message' => 'Por favor, marque la casilla de "No soy un robot".']);
+/**
+ * Envía una respuesta en formato JSON de forma segura y finaliza la ejecución.
+ */
+function enviarRespuestaJSON(bool $exito, string $mensaje = ''): void {
+    // Prevenir que advertencias o espacios en blanco rompan la respuesta JSON
+    if (ob_get_length()) {
+        ob_clean();
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => $exito, 'message' => $mensaje]);
     exit;
 }
 
-// 3. Verificar el reCAPTCHA directamente con los servidores de Google
-$secret_key = RECAPTCHA_SECRET_KEY;
-$url = 'https://www.google.com/recaptcha/api/siteverify';
-$data = ['secret' => $secret_key, 'response' => $recaptcha_response];
-
-$ch_recaptcha = curl_init();
-curl_setopt($ch_recaptcha, CURLOPT_URL, $url);
-curl_setopt($ch_recaptcha, CURLOPT_POST, true);
-curl_setopt($ch_recaptcha, CURLOPT_POSTFIELDS, http_build_query($data));
-curl_setopt($ch_recaptcha, CURLOPT_RETURNTRANSFER, true);
-$verify_response = curl_exec($ch_recaptcha);
-$curl_error_msg = curl_error($ch_recaptcha);
-
-$response_data = json_decode($verify_response);
-
-// Add better error handling to see what is failing if needed
-if (!$response_data || !isset($response_data->success) || !$response_data->success) {
-    echo json_encode(['success' => false, 'message' => 'Verificación de seguridad fallida. Inténtelo de nuevo.']);
-    exit;
+/**
+ * Obtiene y limpia un dato proveniente de $_POST para evitar inyecciones XSS.
+ */
+function limpiarDato(string $clave): string {
+    if (!isset($_POST[$clave])) {
+        return '';
+    }
+    return trim(htmlspecialchars($_POST[$clave], ENT_QUOTES, 'UTF-8'));
 }
 
-// 4. Preparar el contenido del correo electrónico
-$subject = 'NUEVA COTIZACIÓN WEB (Validada por reCAPTCHA)';
-$message = "Se ha recibido una nueva solicitud de cotización desde la página web:\n\n"
-         . "Nombre: $nombre\n"
-         . "Teléfono: $telefono\n"
-         . "Correo: $email\n"
-         . "Servicio de Interés: $servicio\n"
-         . "Detalles Adicionales:\n$detalles\n\n"
-         . "--\nEnviado desde el formulario seguro de vigitecpanama.com";
+/**
+ * Verifica el token de reCAPTCHA contra la API de Google.
+ */
+function verificarRecaptcha(string $respuestaRecaptcha, string $claveSecreta): bool {
+    if (empty($respuestaRecaptcha) || empty($claveSecreta)) {
+        return false;
+    }
 
-// 5. Configurar el correo de destino (Desde el archivo .env)
-$destEmail = getenv('SMTP_DESTINATION') ?: 'info@vigitecpanama.com';
-$resend_api_key = getenv('RESEND_API_KEY');
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $datos = ['secret' => $claveSecreta, 'response' => $respuestaRecaptcha];
 
-// Si el servidor no tiene la clave de Resend configurada, mostramos error
-if (empty($resend_api_key)) {
-    if (ob_get_length()) ob_clean(); // Limpiar cualquier texto residual antes de enviar JSON
-    echo json_encode(['success' => false, 'message' => 'Error de configuración del servidor de correos.']);
-    exit;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($datos));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    $respuesta = curl_exec($ch);
+    
+    // Si cURL falla al conectar, asumimos verificación fallida
+    if (curl_errno($ch)) {
+        return false;
+    }
+
+    $datosRespuesta = json_decode($respuesta, true);
+    return isset($datosRespuesta['success']) && $datosRespuesta['success'] === true;
 }
 
-// 6. Enviar el correo utilizando la API de Resend vía cURL
-$ch = curl_init('https://api.resend.com/emails');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
+/**
+ * Envía un correo electrónico utilizando la API de Resend.
+ */
+function enviarCorreoResend(string $apiKey, string $destinatario, string $responderA, string $asunto, string $mensaje): bool {
+    $url = 'https://api.resend.com/emails';
+    
+    $datos = [
+        // En producción, cambiar por un dominio propio verificado (ej. no-reply@vigitecpanama.com)
+        'from' => 'onboarding@resend.dev', 
+        'to' => $destinatario,
+        'reply_to' => $responderA,
+        'subject' => $asunto,
+        'text' => $mensaje
+    ];
 
-// Cabeceras de autenticación obligatorias para Resend
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Authorization: Bearer ' . $resend_api_key,
-    'Content-Type: application/json'
-]);
-
-// Paquete de datos en formato JSON a enviar
-$payload = json_encode([
-    'from' => 'onboarding@resend.dev', // En producción, cambiar por un correo verificado (ej. info@vigitecpanama.com)
-    'to' => $destEmail,
-    'reply_to' => $email, // Permite responder directamente al cliente
-    'subject' => $subject,
-    'text' => $message // Se envía en formato de texto plano
-]);
-
-curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-$response = curl_exec($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-
-// Limpiar buffer nuevamente para garantizar que la respuesta sea un JSON puro
-if (ob_get_length()) ob_clean();
-
-// 7. Evaluar el resultado del envío
-if ($httpcode >= 200 && $httpcode < 300) {
-    echo json_encode(['success' => true]); // Envío exitoso
-} else {
-    $error_msg = error_get_last();
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Error al enviar a través de Resend.', 
-        'http_code' => $httpcode, 
-        'resend_response' => $response,
-        'php_error' => $error_msg
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $apiKey,
+        'Content-Type: application/json'
     ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($datos));
+    
+    curl_exec($ch);
+    $codigoHttp = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    return ($codigoHttp >= 200 && $codigoHttp < 300);
 }
 
+
+/**
+ * --- FLUJO PRINCIPAL ---
+ */
+
+// Iniciar buffer para evitar salida accidental de texto
+ob_start();
+
+try {
+    // 1. Validar configuración crítica del servidor
+    $resendApiKey = getenv('RESEND_API_KEY');
+    if (empty($resendApiKey)) {
+        enviarRespuestaJSON(false, 'Error de configuración del servidor de correos.');
+    }
+
+    $claveSecretaRecaptcha = defined('RECAPTCHA_SECRET_KEY') ? RECAPTCHA_SECRET_KEY : '';
+    
+    // 2. Obtener y sanitizar datos del formulario
+    $nombre   = limpiarDato('Nombre');
+    $telefono = limpiarDato('Teléfono');
+    $email    = limpiarDato('Email');
+    $servicio = limpiarDato('Servicio');
+    $detalles = limpiarDato('Detalles');
+    $recaptchaResponse = limpiarDato('g-recaptcha-response');
+
+    // 3. Verificaciones de seguridad (reCAPTCHA)
+    if (empty($recaptchaResponse)) {
+        enviarRespuestaJSON(false, 'Por favor, marque la casilla de "No soy un robot".');
+    }
+
+    if (!verificarRecaptcha($recaptchaResponse, $claveSecretaRecaptcha)) {
+        enviarRespuestaJSON(false, 'Verificación de seguridad fallida. Inténtelo de nuevo.');
+    }
+
+    // 4. Preparar el contenido del correo
+    $asunto = 'NUEVA COTIZACIÓN WEB (Validada por reCAPTCHA)';
+    $mensaje = "Se ha recibido una nueva solicitud de cotización desde la página web:\n\n"
+             . "Nombre: $nombre\n"
+             . "Teléfono: $telefono\n"
+             . "Correo: $email\n"
+             . "Servicio de Interés: $servicio\n"
+             . "Detalles Adicionales:\n$detalles\n\n"
+             . "--\nEnviado desde el formulario seguro de vigitecpanama.com";
+
+    $correoDestino = getenv('SMTP_DESTINATION') ?: 'info@vigitecpanama.com';
+
+    // 5. Enviar el correo final
+    $envioExitoso = enviarCorreoResend($resendApiKey, $correoDestino, $email, $asunto, $mensaje);
+
+    // 6. Evaluar el resultado y responder al cliente
+    if ($envioExitoso) {
+        enviarRespuestaJSON(true);
+    } else {
+        enviarRespuestaJSON(false, 'Error al enviar a través de Resend. Inténtelo más tarde.');
+    }
+
+} catch (Exception $e) {
+    // Capturar cualquier error no previsto de forma silenciosa para el usuario
+    enviarRespuestaJSON(false, 'Ha ocurrido un error inesperado. Inténtelo más tarde.');
+}
