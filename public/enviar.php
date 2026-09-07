@@ -22,19 +22,20 @@ $secret_key = RECAPTCHA_SECRET_KEY;
 $url = 'https://www.google.com/recaptcha/api/siteverify';
 $data = ['secret' => $secret_key, 'response' => $recaptcha_response];
 
-$options = [
-    'http' => [
-        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-        'method'  => 'POST',
-        'content' => http_build_query($data)
-    ]
-];
-$context = stream_context_create($options);
-$verify_response = file_get_contents($url, false, $context);
+$ch_recaptcha = curl_init();
+curl_setopt($ch_recaptcha, CURLOPT_URL, $url);
+curl_setopt($ch_recaptcha, CURLOPT_POST, true);
+curl_setopt($ch_recaptcha, CURLOPT_POSTFIELDS, http_build_query($data));
+curl_setopt($ch_recaptcha, CURLOPT_RETURNTRANSFER, true);
+$verify_response = curl_exec($ch_recaptcha);
+
 $response_data = json_decode($verify_response);
 
-// Si Google determina que es un robot, detenemos el proceso (Early Return)
-if (!$response_data->success) {
+// Add better error handling to see what is failing if needed
+if (!$response_data || !isset($response_data->success) || !$response_data->success) {
+    // Para depurar si falla, podrías descomentar la siguiente línea temporalmente en producción:
+    // echo json_encode(['success' => false, 'message' => 'Error de recaptcha', 'debug' => $response_data]); exit;
+    
     echo json_encode(['success' => false, 'message' => 'Verificación de seguridad fallida. Inténtelo de nuevo.']);
     exit;
 }
