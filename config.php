@@ -14,6 +14,7 @@ if (file_exists($envPath)) {
     }
 }
 
-// Definir constante para uso en scripts heredados
+// Definir constantes para uso en scripts heredados
 define('RECAPTCHA_SECRET_KEY', getenv('RECAPTCHA_SECRET_KEY') ?: '');
+define('RECAPTCHA_SITE_KEY', getenv('RECAPTCHA_SITE_KEY') ?: '');
 ?>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../config.php';
 $current_page = 'cotizacion';
 $page_title = 'Solicitar Cotización - Vigitec Panamá';
 $page_description = 'Solicita una cotización sin compromiso. Protege tu hogar o empresa con los mejores sistemas de seguridad y vigilancia en Panamá.';
@@ -90,7 +91,7 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
               
               <!-- reCAPTCHA Oficial de Google -->
               <div class="flex items-center justify-center pt-2">
-                <div class="g-recaptcha" data-sitekey="6LdT5GstAAAAAGbH5pmU2ujs07J8p1IcKxXX_1SQ" data-theme="dark"></div>
+                <div class="g-recaptcha" data-sitekey="<?= htmlspecialchars(RECAPTCHA_SITE_KEY) ?>" data-theme="dark"></div>
               </div>
 
               <div class="pt-2">
@@ -160,9 +161,6 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
                       successMessage.classList.remove('hidden');
                     }, 300);
                   } else {
-                    // TEMPORAL: Mostrar el error exacto en pantalla para poder depurarlo
-                    alert("DETALLE DEL ERROR:\n" + JSON.stringify(data, null, 2));
-                    
                     showErrorToast(data.message || 'Error de seguridad. Por favor intente nuevamente.');
                     grecaptcha.reset();
                     

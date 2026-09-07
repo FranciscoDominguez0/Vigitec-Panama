@@ -37,25 +37,7 @@ $response_data = json_decode($verify_response);
 
 // Add better error handling to see what is failing if needed
 if (!$response_data || !isset($response_data->success) || !$response_data->success) {
-    // Guardar el error en un archivo para que lo pueda leer:
-    file_put_contents(__DIR__ . '/debug_recaptcha.txt', print_r([
-        'time' => date('Y-m-d H:i:s'),
-        'debug' => $response_data, 
-        'raw' => $verify_response, 
-        'curl_err' => $curl_error_msg
-    ], true));
-    
-    // Modo depuración activo:
-    if (ob_get_length()) ob_clean();
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Error de recaptcha', 
-        'debug' => $response_data, 
-        'raw_response' => $verify_response, 
-        'curl_error' => $curl_error_msg,
-        'secret_key_length' => strlen($secret_key),
-        'secret_key_start' => substr($secret_key, 0, 5)
-    ]); 
+    echo json_encode(['success' => false, 'message' => 'Verificación de seguridad fallida. Inténtelo de nuevo.']);
     exit;
 }
 
