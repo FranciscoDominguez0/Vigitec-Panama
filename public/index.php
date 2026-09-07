@@ -14,14 +14,14 @@ $page_url = 'https://vigitecpanama.com/';
 
   <?php include 'includes/header.php'; ?>
 
-  <!-- ==================== HERO SECTION ==================== -->
+  <!-- ==================== SECCIÓN PRINCIPAL (HERO) ==================== -->
   <section class="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-32 bg-[url('/assets/img/hero/servicios_bg.png')] bg-cover bg-center bg-no-repeat bg-fixed">
-    <!-- Abstract Shape Background -->
+    <!-- Fondo Decorativo Abstracto -->
     <div class="absolute top-0 right-0 w-1/2 h-full bg-primary rounded-l-[100px] opacity-50 hidden lg:block"></div>
     
     <div class="container mx-auto px-4 max-w-7xl relative z-10 flex flex-col lg:flex-row items-center">
       
-      <!-- Left Content -->
+      <!-- Contenido Izquierdo (Texto y Botones) -->
       <div class="w-full lg:w-1/2 lg:pr-12 text-center lg:text-left mb-16 lg:mb-0">
         <h1 class="text-5xl lg:text-6xl xl:text-7xl font-display font-extrabold text-white leading-[1.1] mb-6 tracking-tight mt-10">
           Protegemos Lo <br>
@@ -42,19 +42,19 @@ $page_url = 'https://vigitecpanama.com/';
         </div>
       </div>
       
-      <!-- Right Image Composition -->
+      <!-- Contenido Derecho (Imagen Decorativa) -->
       <div class="w-full lg:w-1/2 relative">
         <div class="relative w-full max-w-md mx-auto">
-          <!-- Decorator -->
+          <!-- Cuadro Decorativo Superior -->
           <div class="absolute -top-6 -left-6 w-24 h-24 border-4 border-accent rounded-3xl opacity-50"></div>
           <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-primary rounded-full z-0"></div>
           
-          <!-- Main Image -->
+          <!-- Imagen Principal del Técnico -->
           <div class="relative z-10 w-full aspect-[4/5] overflow-hidden rounded-[2rem] rounded-tr-none shadow-2xl border-4 border-secondary">
             <img src="/assets/img/hero/tecnico_instalador_v2.webp" alt="Técnico Instalando Sistema de Seguridad" class="w-full h-full object-cover">
           </div>
           
-          <!-- Floating Badge -->
+          <!-- Etiqueta Flotante de Soporte 24/7 -->
           <div class="absolute bottom-10 -left-12 lg:-left-20 bg-white p-4 rounded-2xl shadow-premium z-20 flex items-center space-x-4">
             <div class="bg-green-100 p-3 rounded-full text-green-600">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
@@ -70,7 +70,7 @@ $page_url = 'https://vigitecpanama.com/';
     </div>
   </section>
 
-  <!-- ==================== SERVICES SUMMARY ==================== -->
+  <!-- ==================== RESUMEN DE SERVICIOS ==================== -->
   <section class="py-24 bg-[#111111]">
     <div class="container mx-auto px-4 max-w-5xl">
       
@@ -82,7 +82,7 @@ $page_url = 'https://vigitecpanama.com/';
         </div>
       </div>
 
-      <!-- Architectural 2x2 Grid -->
+      <!-- Cuadrícula de Servicios (2x2) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16">
         
         <!-- Item 1 -->

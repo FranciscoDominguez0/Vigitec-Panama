@@ -30,17 +30,15 @@ $page_url = $page_url ?? 'https://vigitecpanama.com/';
 <!-- Preload del fondo principal para evitar parpadeos -->
 <link rel="preload" as="image" href="/assets/img/hero/servicios_bg.png">
 
-<!-- Fonts: Inter for clean corporate look, Plus Jakarta Sans for Display headings -->
+<!-- Fuentes: Inter para texto limpio, Plus Jakarta Sans para títulos -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 
-<!-- Tailwind CSS CDN -->
+<!-- Motor de Estilos Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="/assets/js/tailwind-config.js"></script>
 
-<!-- Custom Styles (minimal) -->
-<link rel="stylesheet" href="/assets/css/styles.css" />
 
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="/assets/img/hero/favicon.ico">

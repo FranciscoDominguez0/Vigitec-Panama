@@ -22,7 +22,7 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
     <div class="container mx-auto px-4 max-w-6xl relative z-10">
       <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
         
-        <!-- Left Side: Text Content -->
+        <!-- Lado Izquierdo: Contenido de Texto -->
         <div class="lg:w-1/2 text-center lg:text-left">
           <h2 class="text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-widest font-display mb-6 leading-tight">
             Protegemos <span class="text-accent">lo que más importa</span>
@@ -36,17 +36,17 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
           <div class="hidden lg:block w-20 h-1 bg-accent rounded-full"></div>
         </div>
 
-        <!-- Right Side: Form -->
+        <!-- Lado Derecho: Formulario de Cotización -->
         <div class="lg:w-1/2 w-full">
           <div id="form-container" class="bg-[#1A1A1A]/95 backdrop-blur-md p-6 lg:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.7)] rounded-lg border border-gray-700/50 relative">
             
-            <!-- Custom Error Toast -->
+            <!-- Alerta Personalizada de Error (Toast) -->
             <div id="custom-error-toast" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-accent text-white px-5 py-3 rounded-md shadow-red-glow font-medium text-sm flex items-center z-50 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-10px] w-11/12 md:w-auto md:max-w-md text-center">
               <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
               <span id="custom-error-message"></span>
             </div>
 
-            <!-- Success Message (Hidden) -->
+            <!-- Mensaje de Éxito (Oculto por defecto) -->
             <div id="success-message" class="hidden flex-col items-center justify-center p-8 text-center">
               <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mb-6 animate-bounce">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -97,14 +97,14 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
                 <button id="submit-btn" type="submit" class="w-full px-6 py-4 bg-white text-primary font-bold tracking-wider uppercase hover:bg-accent hover:text-white transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(230,57,70,0.4)] flex items-center justify-center group relative overflow-hidden rounded">
                   <span id="btn-text">Solicitar Cotización</span>
                   <svg id="btn-icon" class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                  <!-- Spinner (Hidden by default) -->
+                  <!-- Spinner de Carga (Oculto por defecto) -->
                   <svg id="btn-spinner" class="hidden animate-spin ml-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </button>
               </div>
               
             </form>
             
-            <!-- AJAX Submission Script -->
+            <!-- Script para Enviar Formulario sin Recargar (AJAX) -->
             <script>
               function showErrorToast(message) {
                 const toast = document.getElementById('custom-error-toast');

@@ -14,7 +14,7 @@ $page_url = 'https://vigitecpanama.com/quienes-somos/';
 
   <?php include '../includes/header.php'; ?>
 
-  <!-- ==================== MAIN CONTENT ==================== -->
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
   <section class="relative min-h-screen flex items-center justify-center pt-24 pb-20">
     <!-- Imagen de fondo -->
     <div class="absolute inset-0 z-0">

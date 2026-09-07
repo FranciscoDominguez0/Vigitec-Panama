@@ -2,14 +2,14 @@
   <div class="container mx-auto px-4 max-w-7xl">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12 mb-8">
       
-      <!-- Brand -->
+      <!-- Logo y Descripción -->
       <div class="md:col-span-1">
         <p class="text-gray-400 text-sm leading-relaxed">
           Especialistas en sistemas de seguridad, mantenimiento y protección para tu hogar o negocio con la más alta tecnología.
         </p>
       </div>
 
-      <!-- Links 1 -->
+      <!-- Enlaces Rápidos -->
       <div>
         <h4 class="text-white font-bold font-display mb-6 text-sm tracking-wider uppercase">Explorar</h4>
         <ul class="space-y-3 text-sm text-gray-400">
@@ -19,7 +19,7 @@
         </ul>
       </div>
       
-      <!-- Links 2 -->
+      <!-- Ayuda -->
       <div>
         <h4 class="text-white font-bold font-display mb-6 text-sm tracking-wider uppercase">Ayuda</h4>
         <ul class="space-y-3 text-sm text-gray-400">
@@ -29,7 +29,7 @@
         </ul>
       </div>
 
-      <!-- Contact -->
+      <!-- Información de Contacto -->
       <div>
         <h4 class="text-white font-bold font-display mb-6 text-sm tracking-wider uppercase">Contacto</h4>
         <ul class="space-y-3 text-sm text-gray-400">
@@ -53,6 +53,9 @@
       </div>
       
     </div>
+    
+    <!-- Borde superior decorativo -->
+    <div class="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary mb-8"></div>
     
     <!-- Bottom Footer -->
     <div class="text-center text-sm text-gray-600">

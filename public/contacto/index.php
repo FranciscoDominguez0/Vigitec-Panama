@@ -30,7 +30,7 @@ $page_url = 'https://vigitecpanama.com/contacto/';
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-[#1A1A1A]/95 backdrop-blur-md p-8 md:p-10 rounded-2xl border border-gray-700/50 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
         
-        <!-- Contact Details -->
+        <!-- Detalles de Contacto -->
         <div class="space-y-8 flex flex-col justify-center">
           
           <div class="flex items-start space-x-4">
@@ -75,7 +75,7 @@ $page_url = 'https://vigitecpanama.com/contacto/';
 
         </div>
 
-        <!-- Google Maps (Optimized Delayed Load) -->
+        <!-- Mapa de Google (Carga diferida para optimizar velocidad) -->
         <div class="w-full aspect-square md:aspect-[4/3] rounded-xl overflow-hidden border border-gray-700 shadow-inner relative bg-[#1A1A1A]">
           <iframe 
             id="delayed-map"
