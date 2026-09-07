@@ -160,6 +160,9 @@ $page_url = 'https://vigitecpanama.com/cotizacion/';
                       successMessage.classList.remove('hidden');
                     }, 300);
                   } else {
+                    // TEMPORAL: Mostrar el error exacto en pantalla para poder depurarlo
+                    alert("DETALLE DEL ERROR:\n" + JSON.stringify(data, null, 2));
+                    
                     showErrorToast(data.message || 'Error de seguridad. Por favor intente nuevamente.');
                     grecaptcha.reset();
                     
