@@ -51,63 +51,47 @@ $message .= "Servicio de Interés: " . $servicio . "\n";
 $message .= "Detalles Adicionales:\n" . $detalles . "\n\n";
 $message .= "--\nEnviado desde el formulario seguro de vigitecpanama.com";
 
-require __DIR__ . '/../vendor/autoload.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+// Determinar correo de destino dinámico
+$destEmail = getenv('SMTP_DESTINATION');
+if (empty($destEmail)) {
+    $destEmail = 'info@vigitecpanama.com';
+}
 
-$mail = new PHPMailer(true);
+$resend_api_key = getenv('RESEND_API_KEY');
 
-try {
-    // Configuración del servidor SMTP
-    $mail->isSMTP();
-    $mail->Host       = getenv('SMTP_HOST');
-    $mail->SMTPAuth   = true;
-    $mail->Username   = getenv('SMTP_USER');
-    $mail->Password   = getenv('SMTP_PASS');
-    
-    // Determinar la seguridad por el puerto
-    $puerto = getenv('SMTP_PORT');
-    $mail->Port = $puerto;
-    if ($puerto == 465) {
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    } else {
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    }
-
-    // Desactivar validación estricta de SSL local (útil en algunos hostings)
-    $mail->SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
-
-    // Remitente y Destinatario
-    $mail->setFrom(getenv('SMTP_USER'), 'Cotizaciones Web Vigitec');
-    
-    // Correo de destino dinámico (si está vacío, usa el mismo SMTP_USER)
-    $destEmail = getenv('SMTP_DESTINATION');
-    if (empty($destEmail)) {
-        $destEmail = getenv('SMTP_USER');
-    }
-    $mail->addAddress($destEmail, 'Destinatario Vigitec'); 
-    
-    $mail->addReplyTo($email, $nombre); // Responder al cliente
-
-    // Contenido del correo
-    $mail->CharSet = 'UTF-8';
-    $mail->isHTML(false);
-    $mail->Subject = $subject;
-    $mail->Body    = $message;
-
-    $mail->send();
-    
-    // Limpiar cualquier warning/notice previo para no corromper el JSON
+// Si no hay API key de Resend, fallar
+if (empty($resend_api_key)) {
     if (ob_get_length()) ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Error de configuración del servidor de correos.']);
+    exit;
+}
+
+$ch = curl_init('https://api.resend.com/emails');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer ' . $resend_api_key,
+    'Content-Type: application/json'
+]);
+
+$payload = json_encode([
+    'from' => 'onboarding@resend.dev', // Debe ser reemplazado por un dominio verificado en Resend en producción ej: info@vigitecpanama.com
+    'to' => $destEmail,
+    'reply_to' => $email,
+    'subject' => $subject,
+    'text' => $message // Enviamos como texto plano, igual que antes
+]);
+
+curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+$response = curl_exec($ch);
+$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (ob_get_length()) ob_clean();
+
+if ($httpcode >= 200 && $httpcode < 300) {
     echo json_encode(['success' => true]);
-} catch (Exception $e) {
-    if (ob_get_length()) ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Error al enviar por SMTP. Inténtelo más tarde.']);
+} else {
+    // En caso de error, se puede registrar $response para depuración
+    echo json_encode(['success' => false, 'message' => 'Error al enviar a través de Resend. Inténtelo más tarde.']);
 }
 ?>
