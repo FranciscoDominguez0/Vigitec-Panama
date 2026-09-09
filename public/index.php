@@ -55,7 +55,7 @@ $page_url = 'https://vigitecpanama.com/';
           </div>
           
           <!-- Etiqueta Flotante de Soporte 24/7 -->
-          <div class="absolute bottom-10 -left-12 lg:-left-20 bg-white p-4 rounded-2xl shadow-premium z-20 flex items-center space-x-4">
+          <div class="absolute bottom-4 left-4 sm:bottom-10 sm:-left-8 lg:-left-20 bg-white p-4 rounded-2xl shadow-premium z-20 flex items-center space-x-4">
             <div class="bg-green-100 p-3 rounded-full text-green-600">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
             </div>
